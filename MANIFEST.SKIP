@@ -1,0 +1,7 @@
+^_build
+^Build$
+^Build.bat$
+^blib
+^MANIFEST\.SKIP$
+^MYMETA\.yml$
+^MYMETA\.json$
