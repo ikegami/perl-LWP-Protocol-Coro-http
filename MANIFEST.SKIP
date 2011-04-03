@@ -1,7 +1,6 @@
-^_build
+^MYMETA\.
 ^Build$
 ^Build.bat$
+^_build
 ^blib
-^MANIFEST\.SKIP$
-^MYMETA\.yml$
-^MYMETA\.json$
+^LWP-Protocol-Coro-http-.*

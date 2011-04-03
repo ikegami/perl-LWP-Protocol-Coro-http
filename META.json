@@ -37,7 +37,7 @@
    "provides" : {
       "LWP::Protocol::Coro::http" : {
          "file" : "lib/LWP/Protocol/Coro/http.pm",
-         "version" : "v1.0.0"
+         "version" : "v1.0.1"
       }
    },
    "release_status" : "stable",
@@ -46,5 +46,5 @@
          "http://creativecommons.org/publicdomain/zero/1.0/"
       ]
    },
-   "version" : "v1.0.0"
+   "version" : "v1.0.1"
 }

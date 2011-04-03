@@ -4,7 +4,7 @@ package LWP::Protocol::Coro::http;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v1.0.0');
+use version; our $VERSION = qv('v1.0.1');
 
 use AnyEvent::HTTP qw( http_request );
 use Coro::Channel  qw( );
@@ -18,7 +18,7 @@ LWP::Protocol::implementor($_, __PACKAGE__) for qw( http https );
 
 sub _set_response_headers {
    my ($response, $headers) = @_;
-   $response->clear();
+
    $response->protocol( "HTTP/".delete($headers->{ HTTPVersion }) );
    $response->code(             delete($headers->{ Status      }) );
    $response->message(          delete($headers->{ Reason      }) );
@@ -41,7 +41,6 @@ sub _set_response_headers {
 
 sub request {
    my ($self, $request, $proxy, $arg, $size, $timeout) = @_;
-   #$size ||= 4096;
 
    #TODO Obey $proxy
 
@@ -78,10 +77,10 @@ sub request {
    # On successful completion: [ '',     \%headers       ]
    # On error:                 [ undef,  \%error_headers ]
    return $self->collect($arg, $response, sub {
-      local *_ = $channel->get();
-      return \$_[1] if defined($_[1]) && length($_[1]);
+      my ($body, $headers) = @{ $channel->get() };
+      return \$body if defined($body) && length($body);
 
-      _set_response_headers($response, $_[2]);
+      _set_response_headers($response, $headers);
       return \'';
    });
 }
@@ -99,16 +98,23 @@ LWP::Protocol::Coro::http - Asynchronous HTTP and HTTPS backend for LWP
 
 =head1 VERSION
 
-Version 1.0.0
+Version 1.0.1
 
 
 =head1 SYNOPSIS
 
+    # Make HTTP and HTTPS requests Coro-friendly.
     use LWP::Protocol::Coro::http;
 
     # Or LWP::UserAgent, WWW::Mechanize, etc
     use LWP::Simple qw( get );
-    $content = get("http://www.perl.org/");
+
+    # A reason to want LWP parallelised.
+    use Coro qw( async );
+
+    for my $url (@urls) {
+        async { process( get($url) ) };
+    }
 
 
 =head1 DESCRIPTION
@@ -131,7 +137,7 @@ available when using this module.
 
 =item * L<Coro>
 
-An excellent co-operative multitasking library.
+An excellent cooperative multitasking library.
 
 =item * L<AnyEvent::HTTP>
 

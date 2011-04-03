@@ -1,9 +1,10 @@
+Build.PL
 Changes.txt
 LICENSE.txt
 MANIFEST
-Build.PL
+MANIFEST.SKIP
+META.yml
+META.json
 README.txt
 lib/LWP/Protocol/Coro/http.pm
 t/00_load.t
-META.yml
-META.json
