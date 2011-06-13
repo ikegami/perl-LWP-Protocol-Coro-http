@@ -4,7 +4,7 @@ package LWP::Protocol::Coro::http;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v1.0.1');
+use version; our $VERSION = qv('v1.0.2');
 
 use AnyEvent::HTTP qw( http_request );
 use Coro::Channel  qw( );
@@ -19,23 +19,26 @@ LWP::Protocol::implementor($_, __PACKAGE__) for qw( http https );
 sub _set_response_headers {
    my ($response, $headers) = @_;
 
-   $response->protocol( "HTTP/".delete($headers->{ HTTPVersion }) );
-   $response->code(             delete($headers->{ Status      }) );
-   $response->message(          delete($headers->{ Reason      }) );
+   my %headers = %$headers;
+
+   $response->protocol( "HTTP/".delete($headers{ HTTPVersion }) )
+      if $headers{ HTTPVersion };
+   $response->code(             delete($headers{ Status      }) );
+   $response->message(          delete($headers{ Reason      }) );
 
    # Uppercase headers are pseudo headers added by AnyEvent::HTTP.
-   delete($headers->{$_}) for grep /^[A-Z]/, keys(%$headers);
+   delete($headers{$_}) for grep /^[A-Z]/, keys(%headers);
 
    if (exists($headers->{'set-cookie'})) {
       # Set-Cookie headers are very non-standard.
       # They cannot be safely joined.
       # Try to undo their joining for HTTP::Cookies.
-      $headers->{'set-cookie'} = [
-         split(/,(?=\s*\w+\s*(?:[=,;]|\z))/, $headers->{'set-cookie'})
+      $headers{'set-cookie'} = [
+         split(/,(?=\s*\w+\s*(?:[=,;]|\z))/, $headers{'set-cookie'})
       ];
    }
 
-   $response->push_header(%$headers);
+   $response->push_header(%headers);
 }
 
 
@@ -93,12 +96,12 @@ __END__
 
 =head1 NAME
 
-LWP::Protocol::Coro::http - Asynchronous HTTP and HTTPS backend for LWP
+LWP::Protocol::Coro::http - Coro-friendly HTTP and HTTPS backend for LWP
 
 
 =head1 VERSION
 
-Version 1.0.1
+Version 1.0.2
 
 
 =head1 SYNOPSIS
@@ -106,14 +109,17 @@ Version 1.0.1
     # Make HTTP and HTTPS requests Coro-friendly.
     use LWP::Protocol::Coro::http;
 
-    # Or LWP::UserAgent, WWW::Mechanize, etc
-    use LWP::Simple qw( get );
+    # Or LWP::Simple, WWW::Mechanize, etc
+    use LWP::UserAgent;
 
-    # A reason to want LWP parallelised.
+    # A reason to want LWP friendly to event loops.
     use Coro qw( async );
 
+    my $ua = LWP::UserAgent->new();
+    $ua->protocols_allowed([qw( http https )]);  # Playing it safe.
+
     for my $url (@urls) {
-        async { process( get($url) ) };
+        async { process( $ua->get($url) ) };
     }
 
 
@@ -137,31 +143,24 @@ available when using this module.
 
 =item * L<Coro>
 
-An excellent cooperative multitasking library.
+An excellent cooperative multitasking library assisted by this module.
 
 =item * L<AnyEvent::HTTP>
 
 Powers this module.
 
-=item * L<LWP::Simple>
-
-Affected by this module.
-
-=item * L<LWP::UserAgent>
-
-Affected by this module.
-
-=item * L<WWW::Mechanize>
+=item * L<LWP::Simple>, L<LWP::UserAgent>, L<WWW::Mechanize>
 
 Affected by this module.
 
 =item * L<Coro::LWP>
 
-An alternative to this module. Intrusive, causing problems in unrelated code. Doesn't support HTTPS. Supports FTP and NTTP.
+An alternative to this module for users of L<Coro>. Intrusive, which results
+in problems in some unrelated code. Doesn't support HTTPS. Supports FTP and NTTP.
 
 =item * L<AnyEvent::HTTP::LWP::UserAgent>
 
-An alternative to this module. Doesn't help code that uses L<LWP::Simple> or L<LWP::UserAgent>.
+An alternative to this module. Doesn't help code that uses L<LWP::Simple> or L<LWP::UserAgent> directly.
 
 =back
 
@@ -212,6 +211,8 @@ L<http://cpanratings.perl.org/d/LWP-Protocol-Coro-http>
 =head1 AUTHOR
 
 Eric Brine, C<< <ikegami@adaelis.com> >>
+
+Max Maischein, C<< <corion@cpan.org> >>
 
 
 =head1 COPYRIGHT & LICENSE

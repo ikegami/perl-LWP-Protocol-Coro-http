@@ -4,3 +4,6 @@
 ^_build
 ^blib
 ^LWP-Protocol-Coro-http-.*
+~$
+^.git/
+.*.bak$
