@@ -56,7 +56,8 @@ sub request {
    my $response = HTTP::Response->new(599, 'Internal Server Error');
    $response->request($request);
 
-   my $channel = Coro::Channel->new(1);
+   my $headers_avail = AnyEvent->condvar();
+   my $data_channel = Coro::Channel->new(1);
 
    my %handle_opts;
    $handle_opts{read_size}     = $size if defined($size);
@@ -72,19 +73,38 @@ sub request {
       headers => \%headers,
       %opts,
       recurse => 0,
-      on_body => sub { $channel->put(\@_); return 1; },
-      sub {            $channel->put(\@_); },
+      on_header => sub {
+         #my ($headers) = @_;
+         _set_response_headers($response, $_[0]);
+         $headers_avail->send();
+         return 1;
+      },
+      on_body => sub {
+         #my ($chunk, $headers) = @_;
+         $data_channel->put(\$_[0]);
+         return 1;
+      },
+      sub { # On completion
+         # On successful completion: @_ = ('',     $headers)
+         # On error:                 @_ = (undef,  $headers)
+
+         # It is possible for the request to complete without
+         # calling the header callback in the event of error.
+         # It is also possible for the Status to change as the
+         # result of an error. This handles these events.
+         _set_response_headers($response, $_[1]);
+         $headers_avail->send();
+         $data_channel->put(\'');
+      },
    );
+   
+   # We need to wait for the headers so the response code
+   # is set up properly. LWP::Protocol decides on ->is_success
+   # whether to call the :content_cb or not.
+   $headers_avail->recv();
 
-   # On body chunk:            [ $chunk, \%headers       ]
-   # On successful completion: [ '',     \%headers       ]
-   # On error:                 [ undef,  \%error_headers ]
    return $self->collect($arg, $response, sub {
-      my ($body, $headers) = @{ $channel->get() };
-      return \$body if defined($body) && length($body);
-
-      _set_response_headers($response, $headers);
-      return \'';
+      return $data_channel->get();
    });
 }
 
