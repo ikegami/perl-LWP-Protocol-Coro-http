@@ -97,7 +97,7 @@ sub request {
          $data_channel->put(\'');
       },
    );
-   
+
    # We need to wait for the headers so the response code
    # is set up properly. LWP::Protocol decides on ->is_success
    # whether to call the :content_cb or not.
