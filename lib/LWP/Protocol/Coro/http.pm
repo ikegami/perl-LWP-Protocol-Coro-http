@@ -141,6 +141,11 @@ available when using this module.
 
 =over 4
 
+=item * L<LWP::Protocol::AnyEvent::http>
+
+An newer implementation of this module that doesn't require L<Coro>.
+These two modules are developed in parallel.
+
 =item * L<Coro>
 
 An excellent cooperative multitasking library assisted by this module.
