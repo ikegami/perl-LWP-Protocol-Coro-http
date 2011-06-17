@@ -1,5 +1,8 @@
 Revision history for LWP-Protocol-Coro-http
 
+1.0.3   xxxx-xx-xx
+        - Skip tests that will fail due to DNS hijacking.
+
 1.0.2   2011-06-13
         - Tests added.
         - Fixed bugs in :content_cb features.
