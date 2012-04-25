@@ -1,6 +1,6 @@
 Revision history for LWP-Protocol-Coro-http
 
-1.0.4   2012-mm-dd
+1.0.4   2012-04-25
         - Preserve AnyEvent::HTTP pseudo heads by prefixing with X-AE-
         - Fix duplicate headers in response
         - Add proxy support
