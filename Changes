@@ -1,9 +1,8 @@
 Revision history for LWP-Protocol-Coro-http
 
-1.8.0   ~~~~-~~-~~
+1.8.0   2013-08-05
         - Imitate LWP::Protocol::http's removal of newlines from request headers.
         - Handle user:pass in request urls and proxy urls.
-        - ~~~
 
 1.0.7   2012-11-10
         - Implement LWP::Protocol::https's ssl peer verification.
