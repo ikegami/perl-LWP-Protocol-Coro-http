@@ -215,9 +215,14 @@ L<Coro> is a cooperating multitasking system. This means
 it requires some amount of cooperation on the part of
 user code in order to provide parallelism.
 
-This module makes L<LWP> more cooperative by plugging
-in an HTTP and HTTPS protocol implementor powered by
+This module makes L<LWP> more cooperative by plugging in
+an HTTP and HTTPS protocol implementor powered by
 L<AnyEvent::HTTP>.
+
+In short, it allows AnyEvent callbacks and Coro threads
+to execute when LWP is blocked. (Please let me know
+at C<< <ikegami@adaelis.com> >> what other system this helps
+so I can add tests and add a mention.)
 
 All LWP features and configuration options should still be
 available when using this module.
