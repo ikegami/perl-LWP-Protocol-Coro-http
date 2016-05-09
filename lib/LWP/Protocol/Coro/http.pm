@@ -134,7 +134,7 @@ sub request {
    }
 
    # Let LWP handle redirects and cookies.
-   my $guard = http_request(
+   http_request(
       $method => $url,
       headers => \%headers,
       %opts,
