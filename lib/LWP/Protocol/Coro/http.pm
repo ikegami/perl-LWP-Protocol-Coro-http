@@ -268,7 +268,7 @@ available when using this module.
 
 =item * L<LWP::Protocol::AnyEvent::http>
 
-An newer implementation of this module that doesn't require L<Coro>.
+A newer implementation of this module that doesn't require L<Coro>.
 These two modules are developed in parallel.
 
 =item * L<Coro>
