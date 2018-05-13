@@ -34,6 +34,9 @@ my $build = Module::Build->new(
       'LWP::Simple'         => 5.827, # Not strictly required, but ensures that LWP::Simple will actually use LWP::Protocol.
       'version'             => 0,
    },
+   recommends => {
+      'AnyEvent::HTTP::Socks' => 0,
+   },
    add_to_cleanup => [ 'LWP-Protocol-Coro-http-*' ],
    meta_merge     => {
       resources => {

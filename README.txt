@@ -34,6 +34,7 @@ This module requires these other modules and libraries:
     Module::Build    (For installation only)
     Test::More       (For testing only)
     AnyEvent::HTTP
+    AnyEvent::HTTP::Socks  (Optional. Provides support for socks proxies.)
     Coro::Channel
     HTTP::Response
     LWP::Protocol
