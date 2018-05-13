@@ -4,7 +4,7 @@ package LWP::Protocol::Coro::http;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v1.14.0');
+use version; our $VERSION = qv('v1.15.0');
 
 use AnyEvent::HTTP      qw( );
 use Coro::Channel       qw( );
@@ -203,7 +203,7 @@ LWP::Protocol::Coro::http - Coro-friendly HTTP/HTTPS/SOCKS backend for LWP
 
 =head1 VERSION
 
-Version 1.14.0
+Version 1.15.0
 
 
 =head1 SYNOPSIS
